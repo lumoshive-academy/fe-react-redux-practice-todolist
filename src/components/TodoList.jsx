@@ -1,12 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchTodos, deleteTodo } from "../redux/async/todos/actions";
 
 const TodoList = () => {
-    const [todos, setTodos] = useState([
-        { id: 1, text: "Learn React", completed: false },
-        { id: 2, text: "Build a To-Do List", completed: false },
-        { id: 3, text: "Celebrate", completed: false },
-    ]);
+  const { todos, loading, error, isSuccess } = useSelector(
+    (state) => state.todo
+  );
 
+  const dispatch = useDispatch();
+
+  // get data pertama kali
+  useEffect(() => {
+    dispatch(fetchTodos());
+  }, [dispatch]);
+
+  // get data ketika isSuccess true
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(fetchTodos());
+    }
+  }, [isSuccess]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+  if (todos.length === 0) {
+    return <div>No todos found.</div>;
+  }
   return (
     <ul className="list-group">
       {todos.map((todo) => (
@@ -24,11 +47,7 @@ const TodoList = () => {
           >
             {todo.text}
           </span>
-          <button
-            className="btn btn-danger btn-sm"
-          >
-            Delete
-          </button>
+          <button onClick={() => dispatch(deleteTodo(todo.id))} className="btn btn-danger btn-sm">Delete</button>
         </li>
       ))}
     </ul>

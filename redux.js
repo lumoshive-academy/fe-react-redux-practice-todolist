@@ -1,8 +1,12 @@
-import { legacy_createStore as createStore } from 'redux';
+import { legacy_createStore as createStore, combineReducers } from 'redux';
 
 // state untuk menampung data
-const initialState = {
+const counterState = {
     count: 0
+}
+
+const languageState = {
+    language: 'en'
 }
 
 // action untuk penghubung antara state dan reducer
@@ -16,7 +20,7 @@ const initialState = {
 // slice untuk memisahkan reducer
 
 // reducer untuk mengelola state
-const counterReducer = (state = initialState, action) => {
+const counterReducer = (state = counterState, action) => {
     switch(action.type) {
         case 'INCREMENT':
             return {
@@ -33,8 +37,25 @@ const counterReducer = (state = initialState, action) => {
     }
 }
 
+const languageReducer = (state = languageState, action) => {
+    switch(action.type) {
+        case 'SET_LANGUAGE':
+            return {
+                ...state,
+                language: action.payload
+            }
+        default:
+            return state;
+    }
+}
+
 // store untuk menyimpan semua state (data)
-const store = createStore(counterReducer)
+const rootReducer = combineReducers({
+    conter: counterReducer,
+    lang: languageReducer
+})
+
+const store = createStore(rootReducer);
 
 // state awal
 console.log("state awal", store.getState());
